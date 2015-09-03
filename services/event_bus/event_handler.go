@@ -136,7 +136,7 @@ func isReloadRequired(configPath string, newContent string) (bool, error) {
 	currentContent, err := ioutil.ReadFile(configPath)
 
 	if err == nil {
-		return newContent == string(currentContent), nil
+		return newContent != string(currentContent), nil
 	} else if os.IsNotExist(err) {
 		return true, nil
 	}
