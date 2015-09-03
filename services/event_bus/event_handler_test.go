@@ -43,9 +43,8 @@ func orPanic(err error) {
 	}
 }
 
-func TestIsReloadRequired(t *testing.T) {
+func TestEventHandler(t *testing.T) {
 	var config configuration.Configuration
-	_ = config
 
 	Convey("#isReloadRequired", t, func () {
 
@@ -87,6 +86,36 @@ func TestIsReloadRequired(t *testing.T) {
 
 			Convey("we should get an error", func() {
 				So(err, ShouldNotEqual, nil)
+			})
+		})
+	})
+
+	Convey("#changeConfig", t, func() {
+		Convey("When we change the config with a failing command", func() {
+			config.HAProxy.ReloadCommand = "exit 1"
+			config.HAProxy.OutputPath = fmt.Sprintf("/tmp/bamboo_irr%v.conf", rand.Int31())
+			reloaded, err := changeConfig(&config, "arst")
+
+			Convey("We should get an error", func() {
+				So(err, ShouldNotEqual, nil)
+			})
+
+			Convey("It should report not reloaded", func() {
+				So(reloaded, ShouldEqual, false)
+			})
+		})
+
+		Convey("When we change the config with a succeeding command", func() {
+			config.HAProxy.ReloadCommand = "exit 0"
+			config.HAProxy.OutputPath = fmt.Sprintf("/tmp/bamboo_irr%v.conf", rand.Int31())
+			reloaded, err := changeConfig(&config, "farst")
+
+			Convey("We should not get an error", func() {
+				So(err, ShouldEqual, nil)
+			})
+
+			Convey("It should report reloaded", func() {
+				So(reloaded, ShouldEqual, true)
 			})
 		})
 	})
