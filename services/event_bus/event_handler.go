@@ -99,7 +99,7 @@ func ensureLatestConfig(conf *configuration.Configuration, conn *zk.Conn) (reloa
 		return
 	}
 
-	reloaded, err = reloadConfig(conf, content)
+	reloaded, err = changeConfig(conf, content)
 	if err != nil {
 		return
 	}
@@ -144,7 +144,7 @@ func isReloadRequired(configPath string, newContent string) (bool, error) {
 	return false, err // Returning false here as is default value for bool
 }
 
-func reloadConfig(conf *configuration.Configuration, newContent string) (reloaded bool, err error) {
+func changeConfig(conf *configuration.Configuration, newContent string) (reloaded bool, err error) {
 	// This failing scares me a lot, as could end up with very invalid config
 	// content. I'd suggest restoring the original config, but that adds all
 	// kinds of new and interesting failure cases
